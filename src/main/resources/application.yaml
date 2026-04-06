@@ -5,6 +5,6 @@ spring:
     name: MetaboTrack-API
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/math_llm_db?useSSL=false&serverTimezone=UTC
-    username: root
-    password: '@#lurn12138'
+    url: ${metabo.datasource.url}
+    username: ${metabo.datasource.username}
+    password: ${metabo.datasource.password}
