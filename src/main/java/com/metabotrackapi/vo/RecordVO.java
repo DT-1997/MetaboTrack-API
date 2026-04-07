@@ -1,5 +1,6 @@
 package com.metabotrackapi.vo;
 
+import com.metabotrackapi.enumeration.CalorieEfficiencyEnum;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -28,5 +29,5 @@ public class RecordVO {
 
     private Double efficiencyScore;
 
-    private Short calorieEfficiency;
+    private CalorieEfficiencyEnum calorieEfficiency;
 }

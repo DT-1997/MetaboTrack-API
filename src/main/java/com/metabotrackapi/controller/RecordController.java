@@ -3,6 +3,7 @@ package com.metabotrackapi.controller;
 import com.metabotrackapi.converter.RecordConverter;
 import com.metabotrackapi.dto.RecordCreateDTO;
 import com.metabotrackapi.dto.RecordPageQueryDTO;
+import com.metabotrackapi.dto.RecordUpdateDTO;
 import com.metabotrackapi.entity.DailyMetabolicRecord;
 import com.metabotrackapi.result.PageResult;
 import com.metabotrackapi.result.Result;
@@ -51,6 +52,21 @@ public class RecordController {
     public Result<Boolean> createRecord(@RequestBody RecordCreateDTO recordCreateDTO) {
         boolean success = recordService.save(recordConverter.toEntity(recordCreateDTO));
         return success ? Result.success(true) : Result.error("Failed to create record");
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update Anomalous Record Data", description = "Correct previously entered dynamic data (e.g., step count errors due to wearable sync delays).")
+    public Result<Boolean> updateRecord(
+            @Parameter(description = "ID of the record to be modified") @PathVariable Long id,
+            @RequestBody RecordUpdateDTO recordUpdateDTO) {
+
+        DailyMetabolicRecord recordToUpdate = recordConverter.toEntity(recordUpdateDTO);
+
+        recordToUpdate.setId(id);
+
+        boolean success = recordService.updateById(recordToUpdate);
+
+        return success ? Result.success(true) : Result.error("Failed to update record");
     }
 
 

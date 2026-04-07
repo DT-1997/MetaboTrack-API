@@ -1,6 +1,7 @@
 package com.metabotrackapi.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.metabotrackapi.enumeration.CalorieEfficiencyEnum;
 import lombok.Data;
 
 import java.io.Serial;
@@ -43,7 +44,7 @@ public class DailyMetabolicRecord implements Serializable {
 
     private Double efficiencyScore;
 
-    private Short calorieEfficiency;
+    private CalorieEfficiencyEnum calorieEfficiency;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
