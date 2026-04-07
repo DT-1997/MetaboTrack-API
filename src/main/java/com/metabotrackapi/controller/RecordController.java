@@ -16,6 +16,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/record")
 @RequiredArgsConstructor
@@ -69,5 +71,19 @@ public class RecordController {
         return success ? Result.success(true) : Result.error("Failed to update record");
     }
 
+    @DeleteMapping
+    @Operation(summary = "Batch Deletion of Records", description = "Hard delete multiple extreme anomalous data records simultaneously. Expects a JSON array of record IDs in the request body.")
+    public Result<Boolean> deleteRecords(
+            @Parameter(description = "List of record IDs to be deleted")
+            @RequestBody List<Long> ids
+    ) {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error(400, "The list of IDs to delete cannot be empty.");
+        }
+
+        boolean success = recordService.removeByIds(ids);
+
+        return success ? Result.success(true) : Result.error("Failed to delete records. Some IDs might not exist.");
+    }
 
 }
