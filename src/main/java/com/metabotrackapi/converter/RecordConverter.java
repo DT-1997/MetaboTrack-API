@@ -1,5 +1,6 @@
 package com.metabotrackapi.converter;
 
+import com.metabotrackapi.dto.RecordCreateDTO;
 import com.metabotrackapi.entity.DailyMetabolicRecord;
 import com.metabotrackapi.vo.RecordVO;
 import org.mapstruct.Mapper;
@@ -12,4 +13,9 @@ public interface RecordConverter {
      * Entity -> VO
      */
     RecordVO toVO(DailyMetabolicRecord entity);
+
+    /**
+     * DTO -> Entity
+     */
+    DailyMetabolicRecord toEntity(RecordCreateDTO dto);
 }

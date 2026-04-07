@@ -1,5 +1,7 @@
 package com.metabotrackapi.controller;
 
+import com.metabotrackapi.converter.RecordConverter;
+import com.metabotrackapi.dto.RecordCreateDTO;
 import com.metabotrackapi.dto.RecordPageQueryDTO;
 import com.metabotrackapi.entity.DailyMetabolicRecord;
 import com.metabotrackapi.result.PageResult;
@@ -11,10 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/record")
@@ -24,6 +23,9 @@ public class RecordController {
 
     @Autowired
     private RecordService recordService;
+
+    @Autowired
+    private RecordConverter recordConverter;
 
     @GetMapping("/{id}")
     @Operation(summary = "Get Record Details", description = "Query detailed information based on the specified record ID.")
@@ -42,6 +44,13 @@ public class RecordController {
     public Result<PageResult> getRecords(@ParameterObject RecordPageQueryDTO recordPageQueryDTO) {
         PageResult pageResult = recordService.pageQuery(recordPageQueryDTO);
         return Result.success(pageResult);
+    }
+
+    @PostMapping
+    @Operation(summary = "Create Daily Metabolic Record", description = "Receives and saves a daily metabolic record of the user's metabolic metrics (e.g., exercise, heart rate, sleep).")
+    public Result<Boolean> createRecord(@RequestBody RecordCreateDTO recordCreateDTO) {
+        boolean success = recordService.save(recordConverter.toEntity(recordCreateDTO));
+        return success ? Result.success(true) : Result.error("Failed to create record");
     }
 
 
