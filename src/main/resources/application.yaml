@@ -3,8 +3,8 @@ server:
 spring:
   application:
     name: MetaboTrack-API
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${metabo.datasource.url}
-    username: ${metabo.datasource.username}
-    password: ${metabo.datasource.password}
+  profiles:
+    active: dev
+
+mybatis-plus:
+  type-aliases-package: com.metabotrackapi.entity
