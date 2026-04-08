@@ -1,18 +1,14 @@
 package com.metabotrackapi.controller;
 
+import com.metabotrackapi.dto.SimulationRequestDTO;
 import com.metabotrackapi.result.Result;
 import com.metabotrackapi.service.AnalyticsService;
-import com.metabotrackapi.vo.EfficiencyDistributionVO;
-import com.metabotrackapi.vo.ExerciseStreakBenefitVO;
-import com.metabotrackapi.vo.SleepQualityLeverageVO;
-import com.metabotrackapi.vo.UserPercentileVO;
+import com.metabotrackapi.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -59,9 +55,20 @@ public class AnalyticsController {
             summary = "Individual Percentile Ranking",
             description = "Calculates where a specific user stands compared to the entire population. It aggregates the user's historical efficiency score and computes their percentile rank against all other users in the database, returning a gamified title."
     )
-    public Result<UserPercentileVO> getUserPercentile(@PathVariable Long userId) {
+    public Result<UserPercentileVO> getUserPercentile(
+            @Parameter(example = "1001") @PathVariable Long userId) {
         UserPercentileVO rankData = analyticsService.getUserPercentileRank(userId);
         return Result.success(rankData);
+    }
+
+    @PostMapping("/simulator")
+    @Operation(
+            summary = "Dynamic Target Predictor & Simulator",
+            description = "A rule-based engine that accepts hypothetical daily targets (e.g., planned sleep, planned steps) and predicts the user's future efficiency score. Used for frontend interactive sliders and goal setting."
+    )
+    public Result<SimulationResultVO> runSimulator(@RequestBody SimulationRequestDTO requestDTO) {
+        SimulationResultVO result = analyticsService.runDynamicSimulator(requestDTO);
+        return Result.success(result);
     }
 
 

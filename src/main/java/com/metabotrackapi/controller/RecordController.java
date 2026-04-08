@@ -10,6 +10,7 @@ import com.metabotrackapi.result.Result;
 import com.metabotrackapi.service.RecordService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -31,7 +32,7 @@ public class RecordController {
     @GetMapping("/{id}")
     @Operation(summary = "Get Record Details", description = "Query detailed information based on the specified record ID.")
     public Result<DailyMetabolicRecord> getRecordById(
-            @Parameter(description = "Unique identifier of the metabolic record") @PathVariable Long id
+            @Parameter(description = "Unique identifier of the metabolic record", example = "1001") @PathVariable Long id
     ) {
         DailyMetabolicRecord record = recordService.getById(id);
         if (record == null) {
@@ -57,7 +58,7 @@ public class RecordController {
     @PutMapping("/{id}")
     @Operation(summary = "Update Anomalous Record Data", description = "Correct previously entered dynamic data (e.g., step count errors due to wearable sync delays).")
     public Result<Boolean> updateRecord(
-            @Parameter(description = "ID of the record to be modified") @PathVariable Long id,
+            @Parameter(description = "ID of the record to be modified", example = "1001") @PathVariable Long id,
             @RequestBody RecordUpdateDTO recordUpdateDTO) {
 
         DailyMetabolicRecord recordToUpdate = recordConverter.toEntity(recordUpdateDTO);
@@ -73,6 +74,7 @@ public class RecordController {
     @Operation(summary = "Batch Deletion of Records", description = "Hard delete multiple extreme anomalous data records simultaneously. Expects a JSON array of record IDs in the request body.")
     public Result<Boolean> deleteRecords(
             @Parameter(description = "List of record IDs to be deleted")
+            @Schema(example = "[\n  1001,\n  1002,\n  1005\n]")
             @RequestBody List<Long> ids
     ) {
         if (ids == null || ids.isEmpty()) {
