@@ -24,11 +24,9 @@ import java.util.List;
 @Tag(name = "Record Management", description = "Standardized endpoints for managing daily metabolic and activity data snapshots.")
 public class RecordController {
 
-    @Autowired
-    private RecordService recordService;
+    private final RecordService recordService;
 
-    @Autowired
-    private RecordConverter recordConverter;
+    private final RecordConverter recordConverter;
 
     @GetMapping("/{id}")
     @Operation(summary = "Get Record Details", description = "Query detailed information based on the specified record ID.")
