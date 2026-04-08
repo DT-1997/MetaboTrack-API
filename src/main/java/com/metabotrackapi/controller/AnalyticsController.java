@@ -3,6 +3,7 @@ package com.metabotrackapi.controller;
 import com.metabotrackapi.result.Result;
 import com.metabotrackapi.service.AnalyticsService;
 import com.metabotrackapi.vo.EfficiencyDistributionVO;
+import com.metabotrackapi.vo.ExerciseStreakBenefitVO;
 import com.metabotrackapi.vo.SleepQualityLeverageVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +22,7 @@ public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
 
-    @GetMapping("/efficiency-distribution")
+    @GetMapping("/population/efficiency-distribution")
     @Operation(
             summary = "Get Population Efficiency Distribution",
             description = "Aggregates the 15,000-user snapshot dataset to calculate the distribution of efficiency tiers. Returns user counts and average physiological metrics per tier (LOW, MODERATE, HIGH) to support dashboard visualizations."
@@ -31,7 +32,7 @@ public class AnalyticsController {
         return Result.success(distributionList);
     }
 
-    @GetMapping("/sleep-quality")
+    @GetMapping("/leverage/sleep-quality")
     @Operation(
             summary = "Analyze Sleep Quality Leverage",
             description = "Groups the population into sleep duration buckets (<6h, 6-8h, >8h) and calculates average exercise volume vs. average heart rate. Used to medically prove that insufficient sleep increases cardiovascular burden for the same amount of exercise."
@@ -39,6 +40,16 @@ public class AnalyticsController {
     public Result<List<SleepQualityLeverageVO>> getSleepQualityLeverage() {
         List<SleepQualityLeverageVO> leverageList = analyticsService.getSleepQualityLeverage();
         return Result.success(leverageList);
+    }
+
+    @GetMapping("/leverage/exercise-streak")
+    @Operation(
+            summary = "Analyze Exercise Streak Benefits",
+            description = "Groups the dataset by continuous exercise days (0, 1-3, 4-7, >7) to demonstrate how habits affect resting heart rate and metabolic efficiency scores. High-value insight for behavioral health analysis."
+    )
+    public Result<List<ExerciseStreakBenefitVO>> getExerciseStreakBenefit() {
+        List<ExerciseStreakBenefitVO> streakData = analyticsService.getExerciseStreakBenefit();
+        return Result.success(streakData);
     }
 
 }

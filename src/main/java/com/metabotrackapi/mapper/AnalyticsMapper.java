@@ -3,6 +3,7 @@ package com.metabotrackapi.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.metabotrackapi.entity.DailyMetabolicRecord;
 import com.metabotrackapi.vo.EfficiencyDistributionVO;
+import com.metabotrackapi.vo.ExerciseStreakBenefitVO;
 import com.metabotrackapi.vo.SleepQualityLeverageVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -42,4 +43,20 @@ public interface AnalyticsMapper extends BaseMapper<DailyMetabolicRecord> {
             "    ELSE 3 " +
             "  END")
     List<SleepQualityLeverageVO> getSleepQualityLeverage();
+
+    @Select("SELECT " +
+            "  CASE " +
+            "    WHEN continuous_exercise_days = 0 THEN '01. NO STREAK (0 Days)' " +
+            "    WHEN continuous_exercise_days BETWEEN 1 AND 3 THEN '02. SHORT STREAK (1-3 Days)' " +
+            "    WHEN continuous_exercise_days BETWEEN 4 AND 7 THEN '03. CONSISTENT (4-7 Days)' " +
+            "    ELSE '04. ELITE STREAK (>7 Days)' " +
+            "  END AS streakCategory, " +
+            "  COUNT(id) AS recordCount, " +
+            "  ROUND(AVG(heart_rate_resting), 1) AS avgRestingHeartRate, " +
+            "  ROUND(AVG(efficiency_score), 2) AS avgEfficiencyScore, " +
+            "  ROUND(AVG(calories_burned), 1) AS avgCaloriesBurned " +
+            "FROM daily_metabolic_record " +
+            "GROUP BY streakCategory " +
+            "ORDER BY streakCategory ASC")
+    List<ExerciseStreakBenefitVO> getExerciseStreakBenefit();
 }
