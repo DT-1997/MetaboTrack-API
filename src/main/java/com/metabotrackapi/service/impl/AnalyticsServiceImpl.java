@@ -5,6 +5,7 @@ import com.metabotrackapi.entity.DailyMetabolicRecord;
 import com.metabotrackapi.mapper.AnalyticsMapper;
 import com.metabotrackapi.service.AnalyticsService;
 import com.metabotrackapi.vo.EfficiencyDistributionVO;
+import com.metabotrackapi.vo.SleepQualityLeverageVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,5 +20,10 @@ public class AnalyticsServiceImpl extends ServiceImpl<AnalyticsMapper, DailyMeta
     @Override
     public List<EfficiencyDistributionVO> getPopulationEfficiencyDistribution() {
         return analyticsMapper.getEfficiencyDistribution();
+    }
+
+    @Override
+    public List<SleepQualityLeverageVO> getSleepQualityLeverage() {
+        return analyticsMapper.getSleepQualityLeverage();
     }
 }
