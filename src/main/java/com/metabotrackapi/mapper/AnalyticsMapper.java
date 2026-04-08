@@ -6,6 +6,7 @@ import com.metabotrackapi.vo.EfficiencyDistributionVO;
 import com.metabotrackapi.vo.ExerciseStreakBenefitVO;
 import com.metabotrackapi.vo.SleepQualityLeverageVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -59,4 +60,18 @@ public interface AnalyticsMapper extends BaseMapper<DailyMetabolicRecord> {
             "GROUP BY streakCategory " +
             "ORDER BY streakCategory ASC")
     List<ExerciseStreakBenefitVO> getExerciseStreakBenefit();
+
+    @Select("SELECT ROUND(AVG(efficiency_score), 2) FROM daily_metabolic_record WHERE user_id = #{userId}")
+    Double getUserAvgEfficiency(@Param("userId") Long userId);
+
+    @Select("SELECT COUNT(DISTINCT user_id) FROM daily_metabolic_record")
+    Long getTotalUserCount();
+
+    @Select("SELECT COUNT(*) FROM (" +
+            "  SELECT user_id, AVG(efficiency_score) as avg_score " +
+            "  FROM daily_metabolic_record " +
+            "  GROUP BY user_id " +
+            "  HAVING avg_score < #{targetScore}" +
+            ") AS subquery")
+    Long countUsersBelowScore(@Param("targetScore") Double targetScore);
 }

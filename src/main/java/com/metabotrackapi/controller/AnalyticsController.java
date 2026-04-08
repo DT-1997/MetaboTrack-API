@@ -5,10 +5,12 @@ import com.metabotrackapi.service.AnalyticsService;
 import com.metabotrackapi.vo.EfficiencyDistributionVO;
 import com.metabotrackapi.vo.ExerciseStreakBenefitVO;
 import com.metabotrackapi.vo.SleepQualityLeverageVO;
+import com.metabotrackapi.vo.UserPercentileVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,8 +30,8 @@ public class AnalyticsController {
             description = "Aggregates the 15,000-user snapshot dataset to calculate the distribution of efficiency tiers. Returns user counts and average physiological metrics per tier (LOW, MODERATE, HIGH) to support dashboard visualizations."
     )
     public Result<List<EfficiencyDistributionVO>> getEfficiencyDistribution() {
-        List<EfficiencyDistributionVO> distributionList = analyticsService.getPopulationEfficiencyDistribution();
-        return Result.success(distributionList);
+        List<EfficiencyDistributionVO> distributionData = analyticsService.getPopulationEfficiencyDistribution();
+        return Result.success(distributionData);
     }
 
     @GetMapping("/leverage/sleep-quality")
@@ -38,8 +40,8 @@ public class AnalyticsController {
             description = "Groups the population into sleep duration buckets (<6h, 6-8h, >8h) and calculates average exercise volume vs. average heart rate. Used to medically prove that insufficient sleep increases cardiovascular burden for the same amount of exercise."
     )
     public Result<List<SleepQualityLeverageVO>> getSleepQualityLeverage() {
-        List<SleepQualityLeverageVO> leverageList = analyticsService.getSleepQualityLeverage();
-        return Result.success(leverageList);
+        List<SleepQualityLeverageVO> leverageData = analyticsService.getSleepQualityLeverage();
+        return Result.success(leverageData);
     }
 
     @GetMapping("/leverage/exercise-streak")
@@ -51,5 +53,16 @@ public class AnalyticsController {
         List<ExerciseStreakBenefitVO> streakData = analyticsService.getExerciseStreakBenefit();
         return Result.success(streakData);
     }
+
+    @GetMapping("/users/{userId}/percentile")
+    @Operation(
+            summary = "Individual Percentile Ranking",
+            description = "Calculates where a specific user stands compared to the entire population. It aggregates the user's historical efficiency score and computes their percentile rank against all other users in the database, returning a gamified title."
+    )
+    public Result<UserPercentileVO> getUserPercentile(@PathVariable Long userId) {
+        UserPercentileVO rankData = analyticsService.getUserPercentileRank(userId);
+        return Result.success(rankData);
+    }
+
 
 }
