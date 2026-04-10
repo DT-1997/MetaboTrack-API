@@ -144,9 +144,8 @@ High-level data aggregation and predictive analytics.
 ---
 
 ## 📎 Deliverables & Documentation
-## 📎 Deliverables & Documentation
 * 📄 **API Documentation:** [MetaboTrack_API_Documentation.pdf](./docs/MetaboTrack_API_Documentation.pdf)
-* 📘 **Technical Report:** [CWK1_Technical_Report.pdf](./docs/CWK1_Technical_Report.pdf)
+* 📘 **Technical Report:** [MetaboTrack_API_Technical_Report.pdf](./docs/MetaboTrack_API_Technical_Report.pdf)
 * 📊 **Presentation Slides:** [MetaboTrack_Presentation_Slides.pptx](./docs/MetaboTrack_Presentation_Slides.pptx)
 
 ---
