@@ -146,7 +146,7 @@ High-level data aggregation and predictive analytics.
 ## 📎 Deliverables & Documentation
 * 📄 **API Documentation:** [MetaboTrack_API_Documentation.pdf](./docs/MetaboTrack_API_Documentation.pdf)
 * 📘 **Technical Report:** [MetaboTrack_API_Technical_Report.pdf](./docs/MetaboTrack_API_Technical_Report.pdf)
-* 📊 **Presentation Slides:** [MetaboTrack_Presentation_Slides.pptx](./docs/MetaboTrack_Presentation_Slides.pptx)
+* 📊 **Presentation Slides:** [MetaboTrack_API_Presentation_Slides.pptx](./docs/MetaboTrack_API_Presentation_Slides.pptx)
 
 ---
 *Developed for University Coursework. Explicit use of Generative AI has been declared and documented in the technical report appendix.*
