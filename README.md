@@ -103,8 +103,8 @@ High-level data aggregation and predictive analytics.
    Directly exposing database entities (`DailyMetabolicRecord`) compromises security. This project uses `RecordCreateDTO` and `RecordUpdateDTO` to prevent over-posting attacks, and uses highly structured `VOs` (Value Objects) to deliver clean data to the frontend.
 2. **Database Engine Offloading:**
    For macro-analytics (like Population Distribution), transferring 15,000 rows into the JVM for calculation risks `OutOfMemoryError`. Instead, logic was offloaded to the database using native SQL `GROUP BY` and `CASE WHEN` (Data Binning) via MyBatis `@Select` annotations, achieving O(1) application-level memory complexity.
-3. **Synthetic Rule Engine (Reverse Engineering):**
-   The `/simulator` endpoint is not merely a database query. It reverse-engineers the physiological heuristic of the original dataset (e.g., efficiency = Calories / (Steps + 20 * ActiveMins)), applying non-linear scalers, multipliers, and hard-drop penalties for sleep deprivation entirely in Java memory.
+3. **Deterministic Rule Engine (Author-Provided Heuristics):**
+   The `/simulator` endpoint is not merely a database query. It utilizes the physiological heuristics explicitly provided by the dataset author (e.g., efficiency = Calories / (Steps + 20 * ActiveMins)), applying non-linear scalers, multipliers, and hard-drop penalties for sleep deprivation entirely in Java memory.
 
 ---
 
