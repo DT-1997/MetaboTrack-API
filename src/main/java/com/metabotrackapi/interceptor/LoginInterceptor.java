@@ -24,9 +24,6 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtProperties jwtProperties;
 
-    @Autowired
-    private StringRedisTemplate stringRedisTemplate;
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // Check if the intercepted handler is a Controller method
