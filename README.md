@@ -164,7 +164,7 @@ High-level data aggregation and predictive analytics.
        token-name: Authorization
        secret-key: secret_key_for_web_service_and_web_data_cwk1_2026
        ttl: 86400000
-```
+   ```
 4. **Run the Application:**
    ```bash
    mvn spring-boot:run
