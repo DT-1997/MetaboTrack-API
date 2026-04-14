@@ -8,6 +8,7 @@ import com.metabotrackapi.entity.DailyMetabolicRecord;
 import com.metabotrackapi.result.PageResult;
 import com.metabotrackapi.result.Result;
 import com.metabotrackapi.service.RecordService;
+import com.metabotrackapi.util.UserContext;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,12 +39,18 @@ public class RecordController {
         if (record == null) {
             return Result.error(404, "Record Not Found");
         }
+
+        if (!record.getUserId().equals(UserContext.getCurrentId())) {
+            return Result.error(403, "Access Denied: You do not have permission to access this record.");
+        }
+
         return Result.success(record);
     }
 
     @GetMapping
     @Operation(summary = "Get Paginated Records", description = "Retrieve a paginated list of metabolic records using DTO parameters.")
     public Result<PageResult> getRecords(@ParameterObject RecordPageQueryDTO recordPageQueryDTO) {
+        recordPageQueryDTO.setUserId(UserContext.getCurrentId());
         PageResult pageResult = recordService.pageQuery(recordPageQueryDTO);
         return Result.success(pageResult);
     }
@@ -51,7 +58,9 @@ public class RecordController {
     @PostMapping
     @Operation(summary = "Create Daily Metabolic Record", description = "Receives and saves a daily metabolic record of the user's metabolic metrics (e.g., exercise, heart rate, sleep).")
     public Result<Boolean> createRecord(@RequestBody RecordCreateDTO recordCreateDTO) {
-        boolean success = recordService.save(recordConverter.toEntity(recordCreateDTO));
+        DailyMetabolicRecord entity = recordConverter.toEntity(recordCreateDTO);
+        entity.setUserId(UserContext.getCurrentId());
+        boolean success = recordService.save(entity);
         return success ? Result.success(true) : Result.error("Failed to create record");
     }
 
@@ -65,7 +74,7 @@ public class RecordController {
 
         recordToUpdate.setId(id);
 
-        boolean success = recordService.updateById(recordToUpdate);
+        boolean success = recordService.updateRecordWithAuth(recordToUpdate);
 
         return success ? Result.success(true) : Result.error("Failed to update record");
     }
@@ -81,9 +90,8 @@ public class RecordController {
             return Result.error(400, "The list of IDs to delete cannot be empty.");
         }
 
-        boolean success = recordService.removeByIds(ids);
+        boolean success = recordService.deleteRecordsWithAuth(ids);
 
         return success ? Result.success(true) : Result.error("Failed to delete records. Some IDs might not exist.");
     }
-
 }

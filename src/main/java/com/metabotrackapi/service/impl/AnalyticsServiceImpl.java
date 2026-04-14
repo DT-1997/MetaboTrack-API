@@ -6,8 +6,10 @@ import com.metabotrackapi.constant.SimulatorConstant;
 import com.metabotrackapi.dto.SimulationRequestDTO;
 import com.metabotrackapi.entity.DailyMetabolicRecord;
 import com.metabotrackapi.enumeration.CalorieEfficiencyEnum;
+import com.metabotrackapi.exception.BusinessException;
 import com.metabotrackapi.mapper.AnalyticsMapper;
 import com.metabotrackapi.service.AnalyticsService;
+import com.metabotrackapi.util.UserContext;
 import com.metabotrackapi.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,10 @@ public class AnalyticsServiceImpl extends ServiceImpl<AnalyticsMapper, DailyMeta
 
     @Override
     public UserPercentileVO getUserPercentileRank(Long userId) {
+
+        if (!userId.equals(UserContext.getCurrentId())) {
+            throw new BusinessException("Access Denied: Unauthorized percentile query execution.");
+        }
 
         Double personalAvg = analyticsMapper.getUserAvgEfficiency(userId);
 

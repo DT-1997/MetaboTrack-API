@@ -14,7 +14,7 @@ public class RecordPageQueryDTO {
     @Schema(description = "Number of records per page", example = "10")
     private int pageSize = 10;
 
-    @Schema(description = "Filter by User ID", example = "1001")
+    @Schema(description = "Filter by Login in User ID")
     private Long userId;
 
     @Schema(description = "Filter by specific calorie efficiency rating (1=LOW, 2=MODERATE, 3=HIGH)")

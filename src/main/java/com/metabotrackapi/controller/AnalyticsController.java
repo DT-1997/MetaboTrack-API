@@ -3,6 +3,7 @@ package com.metabotrackapi.controller;
 import com.metabotrackapi.dto.SimulationRequestDTO;
 import com.metabotrackapi.result.Result;
 import com.metabotrackapi.service.AnalyticsService;
+import com.metabotrackapi.util.UserContext;
 import com.metabotrackapi.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,6 +58,12 @@ public class AnalyticsController {
     )
     public Result<UserPercentileVO> getUserPercentile(
             @Parameter(example = "1001") @PathVariable Long userId) {
+        Long currentUserId = UserContext.getCurrentId();
+
+        if (!userId.equals(currentUserId)) {
+            return Result.error(403, "Access Denied: You do not have permission to view analytics for other users.");
+        }
+
         UserPercentileVO rankData = analyticsService.getUserPercentileRank(userId);
         return Result.success(rankData);
     }
