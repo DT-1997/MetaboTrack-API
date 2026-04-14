@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/record")
 @RequiredArgsConstructor
-@Tag(name = "Record Management", description = "Standardized endpoints for managing daily metabolic and activity data snapshots.")
+@Tag(name = "2. Record Management", description = "Standardized endpoints for managing daily metabolic and activity data snapshots.")
 public class RecordController {
 
     private final RecordService recordService;

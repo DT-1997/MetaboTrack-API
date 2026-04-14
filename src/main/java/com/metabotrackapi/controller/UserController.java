@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "User Authentication", description = "Endpoints for managing user accounts, including registration, login, and logout.")
+@Tag(name = "1. User Authentication", description = "Endpoints for managing user accounts, including registration, login, and logout.")
 public class UserController {
 
     private final UserService userService;

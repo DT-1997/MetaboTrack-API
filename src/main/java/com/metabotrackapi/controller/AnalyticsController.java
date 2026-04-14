@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/analytics")
 @RequiredArgsConstructor
-@Tag(name = "Advanced Analytics (Insights)", description = "High-level data aggregation and predictive analytics endpoints based on population snapshots.")
+@Tag(name = "3. Advanced Analytics (Insights)", description = "High-level data aggregation and predictive analytics endpoints based on population snapshots.")
 public class AnalyticsController {
 
     private final AnalyticsService analyticsService;
