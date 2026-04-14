@@ -5,6 +5,7 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 ![MyBatis-Plus](https://img.shields.io/badge/MyBatis--Plus-Supported-red?style=for-the-badge)
 ![Swagger](https://img.shields.io/badge/OpenAPI-Swagger_3-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)
+![JWT](https://img.shields.io/badge/JWT-Security-black?style=for-the-badge&logo=JSON%20web%20tokens)
 
 > **Module:** XJCO3011 Web Services and Web Data | **Assessment:** Coursework 1
 > A data-driven RESTful API designed to manage and analyze a massive dataset (15,000+ records) of daily metabolic and physiological activity.
@@ -36,6 +37,7 @@ MetaboTrack API is a robust backend service designed not just to store physiolog
 | **ORM** | MyBatis-Plus | Simplifies standard CRUD with `LambdaQueryWrapper` while allowing highly optimized custom `@Select` queries for complex analytics. |
 | **Database** | MySQL 8.x | Relational database handling 15,000+ rows efficiently with B-Tree indexing. |
 | **API Docs** | Springdoc (OpenAPI 3) | Automated, interactive API documentation (Swagger UI). |
+| **Security** | JWT & Hutool | Stateless API authentication (JSON Web Tokens) combined with salted SHA-256 password hashing. |
 
 ---
 
@@ -55,6 +57,9 @@ The application strictly follows the **Controller-Service-Mapper** layered archi
 ┣ 📂 entity          # Database Object Models
 ┣ 📂 enumeration     # Type-safe Enums (e.g., CalorieEfficiencyEnum)
 ┣ 📂 exception       # Custom Business Exceptions
+┣ 📂 interceptor     # API Web Interceptors (LoginInterceptor for JWT validation)
+┣ 📂 properties      # Externalized configurations (JwtProperties)
+┣ 📂 util            # Core utilities (JwtUtil, UserContext ThreadLocal, PasswordEncoder)
 ┣ 📂 handler         # Global Exception Handlers & Auto-fill meta objects
 ┣ 📂 mapper          # Data Access Layer (MyBatis interfaces & @Select SQL)
 ┣ 📂 result          # Standardized API response wrappers (Result<T>, PageResult)
@@ -71,7 +76,17 @@ The application strictly follows the **Controller-Service-Mapper** layered archi
 
 ## 🚀 API Endpoints Reference
 
-### 📝 1. Record Management (CRUD)
+### 🔐 1. User Authentication & Session
+Secure endpoints for account creation and stateless JWT issuance.
+
+| Method | Endpoint | Description |
+| :---: | :--- | :--- |
+| `POST`| `/api/user/register` | Register a new user with salted password hashing |
+| `POST`| `/api/user/login` | Authenticate and issue JWT access token |
+| `POST`| `/api/user/logout` | Client-side stateless logout audit |
+
+
+### 📝 2. Record Management (CRUD)
 Standardized endpoints for managing daily metabolic snapshots.
 
 | Method | Endpoint | Description |
@@ -82,7 +97,7 @@ Standardized endpoints for managing daily metabolic snapshots.
 | `PUT` | `/api/record/{id}` | Update dynamic/anomalous metrics only |
 | `DELETE`| `/api/record` | Batch hard-delete of extreme outliers |
 
-### 📊 2. Advanced Analytics (Insights)
+### 📊 3. Advanced Analytics (Insights)
 High-level data aggregation and predictive analytics.
 
 | Method | Endpoint | Description                                           |
@@ -105,6 +120,8 @@ High-level data aggregation and predictive analytics.
    For macro-analytics (like Population Distribution), transferring 15,000 rows into the JVM for calculation risks `OutOfMemoryError`. Instead, logic was offloaded to the database using native SQL `GROUP BY` and `CASE WHEN` (Data Binning) via MyBatis `@Select` annotations, achieving O(1) application-level memory complexity.
 3. **Deterministic Rule Engine (Author-Provided Heuristics):**
    The `/simulator` endpoint is not merely a database query. It utilizes the physiological heuristics explicitly provided by the dataset author (e.g., efficiency = Calories / (Steps + 20 * ActiveMins)), applying non-linear scalers, multipliers, and hard-drop penalties for sleep deprivation entirely in Java memory.
+4. **Stateless Authentication & IDOR Defense:**
+   The API employs a secure, stateless JWT authentication mechanism. User identity is extracted via a custom `LoginInterceptor` and temporarily stored in a `ThreadLocal` context (`UserContext`). To prevent **Horizontal Privilege Escalation (IDOR)**, all sensitive queries and data modifications (e.g., Update/Delete) strictly enforce a `user_id = current_user_id` constraint at the Service/Database layer, ensuring absolute data isolation between users.
 
 ---
 
@@ -122,26 +139,44 @@ High-level data aggregation and predictive analytics.
    cd MetaboTrack-API
    ```
 
-2. **Configure Database:**
+2. **Database Initialization:**
     * Create a MySQL database named `metabotrack_db`.
-    * Update the credentials in `src/main/resources/application-dev.yaml`:
-   ```yaml
-    spring:
-      datasource:
-        url: jdbc:mysql://localhost:3306/metabotrack_db?useSSL=false&serverTimezone=UTC
-        username: your_username
-        password: your_password
-   ```
+    * Import the provided SQL script to initialize the tables and sample data. The script is located at
+      `src/main/resources/static/metabotrack_db.sql`
+    * You can run it via command line or your preferred SQL client (e.g., DataGrip, Navicat).
 
-3. **Run the Application:**
+3. **Configure Application Properties:**
+   * Create a new file named `application-dev.yaml` inside the `src/main/resources/` directory.
+   ```yaml
+     spring:
+      datasource:
+       driver-class-name: com.mysql.cj.jdbc.Driver
+       url: jdbc:mysql://127.0.0.1:3306/metabotrack_db?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+       username: your_mysql_username
+       password: your_mysql_password
+   
+     mybatis-plus:
+       configuration:
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+     metabotrack-api:
+      jwt:
+       token-name: Authorization
+       secret-key: secret_key_for_web_service_and_web_data_cwk1_2026
+       ttl: 86400000
+```
+4. **Run the Application:**
    ```bash
    mvn spring-boot:run
    ```
-
-4. **Access Swagger UI Documentation:**
-   Open your browser and navigate to: `http://localhost:8081/swagger-ui/index.html`
-
----
+   
+5. **Testing Secure Endpoints (Swagger Auth)**:
+   * Access the interactive API documentation at: `http://localhost:8081/swagger-ui/index.html`
+   * Obtain a JWT token via `/api/user/login`. You can either:
+     * Use the example account: Username user_1, Password 12345678 (pre-filled in Swagger).
+     * Create a new account: Use /api/user/register first, then log in with your new credentials.
+   * Click the green **"Authorize"** button at the top of the Swagger UI.
+   * Paste the token directly into the input field (the `Bearer  `prefix is handled automatically by the OpenAPI config) to unlock protected endpoints.
 
 ## 📎 Deliverables & Documentation
 * 📄 **API Documentation:** [MetaboTrack_API_Documentation.pdf](./docs/MetaboTrack_API_Documentation.pdf)
